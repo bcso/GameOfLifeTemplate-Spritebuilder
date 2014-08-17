@@ -82,4 +82,65 @@ static const int GRID_COLUMNS = 10;
     return _gridArray[row][column];
 }
 
+- (void)evolveStep{
+    //update each Creatures neighbor count
+    [self countNeighbours];
+
+    //update each Creatres state
+    [self updateCreatures];
+    
+    //update the generation
+    _generation++;
+}
+
+-(BOOL)isIndexValidForX:(int)x andY:(int)y{
+    BOOL isIndexValid = YES;
+    if (x<0 || y<0 || x>=GRID_ROWS || y>GRID_COLUMNS){
+        isIndexValid = NO;
+    }
+    return isIndexValid;
+}
+
+-(void)countNeighbours{
+    //iterate through the rows
+    //note that NSArray has a method 'count' that will return the number of elements in it
+    for (int i=0; i<[_gridArray count]; i++) {
+        for (int j=0; i<[_gridArray[i] count]; j++){
+            Creature *currentCreature = _gridArray[i][j];
+            
+            currentCreature.livingNeighbours = 0;
+            
+            for (int x = (i-1); x<=(i+1); x++){
+                for (int y = (j-1); x<=(j+1); y++){
+                    BOOL isIndexValid = [self isIndexValidForX:x andY:y];
+                    if (!((x == i && y == j)) && isIndexValid){
+                        Creature *neighbour = _gridArray[x][y];
+                        if (neighbour.isAlive){
+                            currentCreature.livingNeighbours += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+-(void)updateCreatures{
+    int numAlive = 0;
+    for(int i = 0; i<[_gridArray count]; i++){
+        for(int j = 0; j<[_gridArray[i] count]; j++){
+            Creature *currentCreature = _gridArray[i,j];
+            int neighbours = currentCreature.livingNeighbours;
+            if (neighbours == 3){
+                currentCreature.isAlive = TRUE;
+                numAlive ++;
+            }
+            else if ((neighbours == 1) || (neighbours >= 4)){
+                currentCreature.isAlive = FALSE;
+            }
+        }
+    }
+    _totalAlive = numAlive;
+}
+
 @end

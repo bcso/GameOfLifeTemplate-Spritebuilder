@@ -14,5 +14,7 @@
 @property (nonatomic, assign)int generation;
 
 -(void)setupGrid;
-
+-(void)evolveStep;
+-(void)countNeighbours;
+-(void)updateCreatures;
 @end
